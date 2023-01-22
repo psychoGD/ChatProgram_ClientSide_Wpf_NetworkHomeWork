@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -58,10 +61,13 @@
     <Compile Include="ChatUC.xaml.cs">
       <DependentUpon>ChatUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="JsonHelper\IPAddressConverter.cs" />
+    <Compile Include="JsonHelper\IPEndPointConverter.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MessageUC.xaml.cs">
       <DependentUpon>MessageUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NetworkService.cs" />
     <Compile Include="User.cs" />
     <Page Include="ChatUC.xaml">
       <SubType>Designer</SubType>
@@ -109,6 +115,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -116,6 +123,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\SendImg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\SendImgBlue.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

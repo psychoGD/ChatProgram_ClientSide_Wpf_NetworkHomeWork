@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:ChatProgram_ClientSide_Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="8*"></RowDefinition>
             <RowDefinition></RowDefinition>
@@ -16,8 +16,16 @@
                 </StackPanel>
             </ScrollViewer>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <RichTextBox FontSize="20" Height="50" Width="750"></RichTextBox>
-            <Button x:Name="SendButton" FontSize="20" Content="Send" Height="50" Width="50" Click="SendButton_Click"></Button>
+            <TextBox Text="{Binding Text,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" FontSize="20" Height="50" Width="750"></TextBox>
+            <Button x:Name="SendButton" Background="Snow" FontSize="20" BorderBrush="LightBlue" Height="50" Width="50" Click="SendButton_Click">
+                <Image Source="Images/SendImgBlue.png"></Image>
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="30"/>
+                        <Setter Property="Background" Value="Transparent"></Setter>
+                    </Style>
+                </Button.Resources>
+            </Button>
         </StackPanel>
     </Grid>
 </UserControl>

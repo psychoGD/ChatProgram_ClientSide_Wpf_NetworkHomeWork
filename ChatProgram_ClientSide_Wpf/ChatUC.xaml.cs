@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Net.Sockets;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +18,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Newtonsoft.Json;
+using ChatProgram_ClientSide_Wpf.JsonHelper;
 
 namespace ChatProgram_ClientSide_Wpf
 {
@@ -43,13 +48,120 @@ namespace ChatProgram_ClientSide_Wpf
             set { messages = value; OnPropertyChanged(); }
         }
 
+        private string text;
+
+        public string Text
+        {
+            get { return text; }
+            set { text = value; OnPropertyChanged(); }
+        }
+        public JsonSerializerSettings settings { get; set; }
+
         public ChatUC()
         {
             InitializeComponent();
             this.DataContext = this;
+            Task.Run(() =>
+            {
+                try
+                {
+
+                    NetworkService.Start();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+
+            });
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    if (App.CurrentClient.Connected)
+                    {
+                        App.CurrentUser.EndPoint = App.CurrentClient.Client.RemoteEndPoint;
+                        App.CurrentUser.RemoteEndPoint = App.CurrentClient.Client.RemoteEndPoint.ToString();
+                        
+                        settings = new JsonSerializerSettings();
+                        settings.Converters.Add(new IPAddressConverter());
+                        settings.Converters.Add(new IPEndPointConverter());
+                        settings.Formatting = Formatting.Indented;
+                        string jsonString = JsonConvert.SerializeObject(App.CurrentUser,settings);
+                        NetworkService.SendMessageToServer(jsonString);
+                        break;
+                    }
+                }
+            });
             Messages = new ObservableCollection<Message>();
 
+            //For test message
+            InitializeTestMessages();
 
+
+            foreach (var item in Messages)
+            {
+                AddMessageToUI(item);
+            }
+
+
+
+        }
+        public void AddMessageToUI(Message message)
+        {
+            MessageUC messageUC = new MessageUC();
+            string bgColor = "";
+            if (message.FromClient)
+            {
+                bgColor = "LightBlue";
+                messageUC.HorizontalAlignment = HorizontalAlignment.Right;
+            }
+            else
+            {
+                bgColor = "LightGray";
+                string usernameColor = "orange";
+                messageUC.UsernameColor = usernameColor;
+                messageUC.HorizontalAlignment = HorizontalAlignment.Left;
+            }
+            messageUC.BackGroundColor = bgColor;
+            messageUC.ShortTime = message.dateTime.ToShortTimeString();
+            messageUC.message = message;
+            MainStack.Children.Add(messageUC);
+        }
+
+        public Message CreateMessageClass(string text)
+        {
+            Message message = new Message();
+            message.FromClient = true;
+            message.message = text;
+            message.User = App.CurrentUser;
+            message.dateTime = DateTime.Now;
+            return message;
+        }
+
+        private void SendButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var msg = CreateMessageClass(text);
+                var json = JsonConvert.SerializeObject(msg,settings);   
+                NetworkService.SendMessageToServer(json);
+                AddMessageToUI(msg);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("From Client Send Button\n"+ex.Message);
+            }
+            Text = string.Empty;
+
+
+        }
+
+
+        #region Test Region
+        public void InitializeTestMessages()
+        {
             Message message = new Message();
             message.message = "Hello";
             message.User = App.CurrentUser;
@@ -63,55 +175,28 @@ namespace ChatProgram_ClientSide_Wpf
             message2.FromClient = false;
             message2.dateTime = DateTime.Now;
             Messages.Add(message2);
-
-            //foreach (var item in messages)
-            //{
-            //    TextBlock textBlock = new TextBlock();
-            //    textBlock.VerticalAlignment = VerticalAlignment.Top;
-            //    textBlock.FontSize = 16;
-            //    textBlock.HorizontalAlignment = HorizontalAlignment.Right;
-            //    if (message.FromClient)
-            //    {
-            //        textBlock.Foreground = Brushes.Black;
-            //    }
-            //    else
-            //    {
-            //        textBlock.Foreground = Brushes.Red;
-            //    }
-            //    textBlock.Text = item.message;
-
-
-            //    MainGrid.Children.Add(textBlock);
-            //}
-            foreach (var item in Messages)
-            {
-                if (item.FromClient)
-                {
-                    string bgColor = "LightBlue";
-                    MessageUC messageUC = new MessageUC(item, bgColor);
-                    messageUC.HorizontalAlignment = HorizontalAlignment.Right;
-                    MainStack.Children.Add(messageUC);
-                }
-                else
-                {
-                    string bgColor = "LightGray";
-                    string usernameColor = "orange";
-                    MessageUC messageUC = new MessageUC(item, bgColor);
-                    messageUC.UsernameColor = usernameColor; 
-                    messageUC.HorizontalAlignment = HorizontalAlignment.Left;
-                    MainStack.Children.Add(messageUC);
-                }
-
-            }
-
-
-
         }
 
 
-        private void SendButton_Click(object sender, RoutedEventArgs e)
-        {
+        //foreach (var item in messages)
+        //{
+        //    TextBlock textBlock = new TextBlock();
+        //    textBlock.VerticalAlignment = VerticalAlignment.Top;
+        //    textBlock.FontSize = 16;
+        //    textBlock.HorizontalAlignment = HorizontalAlignment.Right;
+        //    if (message.FromClient)
+        //    {
+        //        textBlock.Foreground = Brushes.Black;
+        //    }
+        //    else
+        //    {
+        //        textBlock.Foreground = Brushes.Red;
+        //    }
+        //    textBlock.Text = item.message;
 
-        }
+
+        //    MainGrid.Children.Add(textBlock);
+        //}
+        #endregion
     }
 }

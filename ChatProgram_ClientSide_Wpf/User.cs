@@ -11,6 +11,6 @@ namespace ChatProgram_ClientSide_Wpf
     {
         public string Username { get; set; }
         public EndPoint EndPoint { get; set; }
-
+        public string RemoteEndPoint { get; set; }
     }
 }

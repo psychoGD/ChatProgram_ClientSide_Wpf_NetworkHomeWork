@@ -27,13 +27,13 @@ namespace ChatProgram_ClientSide_Wpf
         public string ShortTime { get; set; }
 
         public string UsernameColor { get; set; } = "Black";
-        public MessageUC(Message message, string backGroundColor)
+        public MessageUC()
         {
             InitializeComponent();
             this.DataContext = this;
-            this.message = message;
-            BackGroundColor = backGroundColor;
-            ShortTime=  message.dateTime.ToShortTimeString();
+            //this.message = message;
+            //BackGroundColor = backGroundColor;
+            
         }
     }
 }
