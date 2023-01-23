@@ -94,7 +94,12 @@ namespace ChatProgram_ClientSide_Wpf
                         {
                             var stream = App.CurrentClient.GetStream();
                             var br = new BinaryReader(stream);
-                            MessageBox.Show($"From Server : {br.ReadString()}");
+                            var msg = br.ReadString();
+                            if(App.chatUC!=null)
+                            {
+                                var message = App.chatUC.CreateMessageClass(msg,false);
+                                App.chatUC.GetNewMessage(message);
+                            }
                         }
                     });
 

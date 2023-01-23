@@ -22,5 +22,6 @@ namespace ChatProgram_ClientSide_Wpf
         public const int Port = 27001;
         //From Client To Server
         public const string SpecialWordForServer = ";FCTS;";
+        public static ChatUC chatUC { get; set; }
     }
 }

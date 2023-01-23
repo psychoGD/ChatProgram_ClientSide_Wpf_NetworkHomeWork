@@ -83,7 +83,8 @@ namespace ChatProgram_ClientSide_Wpf
                     {
                         App.CurrentUser.EndPoint = App.CurrentClient.Client.RemoteEndPoint;
                         App.CurrentUser.RemoteEndPoint = App.CurrentClient.Client.RemoteEndPoint.ToString();
-                        
+                        MessageBox.Show("Remote End Point\n"+App.CurrentClient.Client.RemoteEndPoint.ToString());
+
                         settings = new JsonSerializerSettings();
                         settings.Converters.Add(new IPAddressConverter());
                         settings.Converters.Add(new IPEndPointConverter());
@@ -139,7 +140,20 @@ namespace ChatProgram_ClientSide_Wpf
             message.dateTime = DateTime.Now;
             return message;
         }
-
+        public Message CreateMessageClass(string text,bool FromClient)
+        {
+            Message message = new Message();
+            message.FromClient = FromClient;
+            message.message = text;
+            message.User = App.CurrentUser;
+            message.dateTime = DateTime.Now;
+            return message;
+        }
+        public void GetNewMessage(Message message)
+        {
+            var msg = CreateMessageClass(message.message, false);
+            AddMessageToUI(msg);
+        }
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
             try

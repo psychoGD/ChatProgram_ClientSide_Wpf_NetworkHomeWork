@@ -56,7 +56,9 @@ namespace ChatProgram_ClientSide_Wpf
                     App.CurrentUser = new User();
                     App.CurrentUser.Username = Username;
                     App.MainGrid.Children.RemoveAt(0);
-                    App.MainGrid.Children.Add(new ChatUC());
+                    ChatUC chatUC = new ChatUC();
+                    App.chatUC = chatUC; 
+                    App.MainGrid.Children.Add(App.chatUC);
                 }
                 else
                 {
