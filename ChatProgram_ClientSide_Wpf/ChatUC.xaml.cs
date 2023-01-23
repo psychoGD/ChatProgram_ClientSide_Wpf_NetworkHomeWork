@@ -83,13 +83,13 @@ namespace ChatProgram_ClientSide_Wpf
                     {
                         App.CurrentUser.EndPoint = App.CurrentClient.Client.RemoteEndPoint;
                         App.CurrentUser.RemoteEndPoint = App.CurrentClient.Client.RemoteEndPoint.ToString();
-                        MessageBox.Show("Remote End Point\n"+App.CurrentClient.Client.RemoteEndPoint.ToString());
+                        MessageBox.Show("Remote End Point\n" + App.CurrentClient.Client.RemoteEndPoint.ToString());
 
                         settings = new JsonSerializerSettings();
                         settings.Converters.Add(new IPAddressConverter());
                         settings.Converters.Add(new IPEndPointConverter());
                         settings.Formatting = Formatting.Indented;
-                        string jsonString = JsonConvert.SerializeObject(App.CurrentUser,settings);
+                        string jsonString = JsonConvert.SerializeObject(App.CurrentUser, settings);
                         NetworkService.SendMessageToServer(jsonString);
                         break;
                     }
@@ -111,24 +111,27 @@ namespace ChatProgram_ClientSide_Wpf
         }
         public void AddMessageToUI(Message message)
         {
-            MessageUC messageUC = new MessageUC();
-            string bgColor = "";
-            if (message.FromClient)
+            Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                bgColor = "LightBlue";
-                messageUC.HorizontalAlignment = HorizontalAlignment.Right;
-            }
-            else
-            {
-                bgColor = "LightGray";
-                string usernameColor = "orange";
-                messageUC.UsernameColor = usernameColor;
-                messageUC.HorizontalAlignment = HorizontalAlignment.Left;
-            }
-            messageUC.BackGroundColor = bgColor;
-            messageUC.ShortTime = message.dateTime.ToShortTimeString();
-            messageUC.message = message;
-            MainStack.Children.Add(messageUC);
+                MessageUC messageUC = new MessageUC();
+                string bgColor = "";
+                if (message.FromClient)
+                {
+                    bgColor = "LightBlue";
+                    messageUC.HorizontalAlignment = HorizontalAlignment.Right;
+                }
+                else
+                {
+                    bgColor = "LightGray";
+                    string usernameColor = "orange";
+                    messageUC.UsernameColor = usernameColor;
+                    messageUC.HorizontalAlignment = HorizontalAlignment.Left;
+                }
+                messageUC.BackGroundColor = bgColor;
+                messageUC.ShortTime = message.dateTime.ToShortTimeString();
+                messageUC.message = message;
+                MainStack.Children.Add(messageUC);
+            });
         }
 
         public Message CreateMessageClass(string text)
@@ -140,7 +143,7 @@ namespace ChatProgram_ClientSide_Wpf
             message.dateTime = DateTime.Now;
             return message;
         }
-        public Message CreateMessageClass(string text,bool FromClient)
+        public Message CreateMessageClass(string text, bool FromClient)
         {
             Message message = new Message();
             message.FromClient = FromClient;
@@ -159,13 +162,13 @@ namespace ChatProgram_ClientSide_Wpf
             try
             {
                 var msg = CreateMessageClass(text);
-                var json = JsonConvert.SerializeObject(msg,settings);   
+                var json = JsonConvert.SerializeObject(msg, settings);
                 NetworkService.SendMessageToServer(json);
                 AddMessageToUI(msg);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("From Client Send Button\n"+ex.Message);
+                MessageBox.Show("From Client Send Button\n" + ex.Message);
             }
             Text = string.Empty;
 
